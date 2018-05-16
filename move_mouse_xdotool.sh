@@ -1,6 +1,6 @@
 #!/bin/bash
 ## variables resolucion de la pantalla
-echo "resolución pantalla:",$(xdpyinfo | grep dimensions)
+echo "resolución pantalla:",xdpyinfo | grep dimensions
 xsize=$(xdpyinfo | grep dimensions | cut -d " " -f7 | cut -d "x" -f1)
 ysize=$(xdpyinfo | grep dimensions | cut -d " " -f7 | cut -d "x" -f2)
 ##
@@ -14,8 +14,7 @@ do
             then
                 posx=$(($posx-2))
         fi
-
-        echo xdotool mousemove $posx $posy
+#       echo xdotool mousemove $posx $posy
         xdotool mousemove $posx $posy # mover a posisión con x aumentado
-        sleep 1 # espera de 5 minutos
+        sleep 300 # espera de 5 minutos
 done
