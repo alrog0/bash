@@ -19,3 +19,14 @@ elif
 else
 exit 0
 fi
+
+
+
+################ crontab #######################
+
+* guardar script en /home/bateria.sh
+
+* crear crontab asi:
+
+MAILTO=""
+*/1 * * * * sh /home/bateria.sh
