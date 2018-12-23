@@ -1,8 +1,13 @@
-#!/bin/bash
+#!/bin/sh 
 # ruta iconos /usr/share/icons/gnome/32x32/status
+usuario=$(whoami)
+source /home/$usuario/.bashrc
+pid=$(pgrep -u $usuario lxsession | head -n 1)
+dbus=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$pid/environ | sed 's/DBUS_SESSION_BUS_ADDRESS=//' )
+export DBUS_SESSION_BUS_ADDRESS=$dbus
+export HOME=/home/$usuario
+export DISPLAY=:0
 
-export DISPLAY=:0.0
-export XAUTHORITY1=/home/$USER/.Xauthority
 porcentaje_carga_bat=$(cat /sys/class/power_supply/BAT0/capacity)
 fuenteacdc=$(cat /sys/class/power_supply/BAT0/status)
 
