@@ -1,0 +1,20 @@
+#!/bin/bash
+/sbin/fstrim -av
+badblocks -v /dev/sda
+#/sbin/fstrim -av /
+#/sbin/fstrim -v /home
+
+#sudo smartctl -a /dev/sda > reporte-ssd.html
+#sed -e 's/$/\<p>/' reporte-ssd.html > reporte-ssd-ok.html
+#firefox reporte-ssd-ok.html
+
+#sudo hdparm -I /dev/sda
+#hdparm -N /dev/sdb
+# https://www.thomas-krenn.com/en/wiki/SSD_Over-provisioning_using_hdparm
+# firmware hdparm -i /dev/sdX | grep FwRev
+# cat /sys/block/sda/queue/logical_block_size
+# cat /sys/block/sda/queue/physical_block_size
+# sudo hdparm -Tt /dev/sda1
+# sudo hdparm -B254 /dev/sda
+# sudo /sbin/sysctl -w vm.drop_caches=3
+# https://askubuntu.com/questions/1107053/ubutnu-18-04-ssd-sometimes-freeze-for-seconds/1108014
