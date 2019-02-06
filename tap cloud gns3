@@ -1,1 +1,4 @@
 @reboot /usr/sbin/tunctl -t tap0 && /sbin/ifconfig tap0 10.200.200.1 netmask 255.255.255.252 up
+
+iptables -t nat -A POSTROUTING -o wlp6s0 -j MASQUERADE
+iptables -A FORWARD -i tap0 -j ACCEPT
