@@ -1,0 +1,46 @@
+@echo off
+:: borrar de backup local con mas de 7 dias de antiguedad
+forfiles /p "C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\Backups-bases-de-datos" /m * /s /d -7 /c "cmd /c if @isdir==TRUE rmdir /Q /S @path"
+
+cd C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\Backups-bases-de-datos
+:: crear directorio servidor local con la fecha actual
+md %date:~-4,4%"-"%date:~-7,2%"-"%date:~-10,2%
+:: crear directorio en recurso nfs con la fecha actual
+md Z:\BasesDatos\%date:~-4,4%"-"%date:~-7,2%"-"%date:~-10,2%
+
+echo %date% %time% - Inicio backup_db_ReportServer >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+sqlcmd -S KEYLGP01\SQLEXPRESS -i C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\scripts_backups\backup_db_ReportServer.sql >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+echo %date% %time% - Fin backup_db_ReportServer >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+
+echo[ >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+
+echo %date% %time% - Inicio backup_db_ReportServerTempDB >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+sqlcmd -S KEYLGP01\SQLEXPRESS -i C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\scripts_backups\backup_db_ReportServerTempDB.sql >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+echo %date% %time% - Fin backup_db_ReportServerTempDB >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+
+echo[ >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+
+echo %date% %time% - Inicio backup_db_DYNAMICS >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+sqlcmd -S KEYLGP01\SQLEXPRESS -i C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\scripts_backups\backup_db_DYNAMICS.sql >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+echo %date% %time% - Fin backup_db_DYNAMICS >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+
+echo[ >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+
+echo %date% %time% - Inicio backup_db_KEYLO >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+sqlcmd -S KEYLGP01\SQLEXPRESS -i C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\scripts_backups\backup_db_KEYLO.sql >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+echo %date% %time% - Fin backup_db_KEYLO >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+
+echo[ >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+
+move *.bak %date:~-4,4%"-"%date:~-7,2%"-"%date:~-10,2%
+
+echo[ >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+
+mount 192.168.1.230:/shares/backups/backup_GP Z:\  >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+echo[ >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+
+xcopy C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\Backups-bases-de-datos\%date:~-4,4%"-"%date:~-7,2%"-"%date:~-10,2% Z:\BasesDatos\%date:~-4,4%"-"%date:~-7,2%"-"%date:~-10,2% >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+echo[ >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+echo ********************************************************************************* >> C:\Users\Administrador.KEYLGP01\Documents\backupBDGP\logs\log.txt
+:: borrar de ctera archivos con mas de 7 dias de antiguedad
+forfiles /p "Z:\BasesDatos"  /m * /s /d -7 /c "cmd /c if @isdir==TRUE rmdir /Q /S @path"
