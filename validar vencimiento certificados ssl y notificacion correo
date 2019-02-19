@@ -1,0 +1,39 @@
+#!/bin/bash
+dominio='www.google.com' #ingresar dominio a validar
+# enviar correos https://www.binarytides.com/linux-mailx-command/
+# validar fechas https://es.calcuworld.com/calendarios/calculadora-de-tiempo-entre-dos-fechas/
+echo | openssl s_client -servername $dominio -connect $dominio:443 2>/dev/null | openssl x509 -noout -dates | grep -i nota > notAfter
+dia=$(cat notAfter | cut -d " " -f2)
+mes=$(cat notAfter | cut -d "=" -f2 | cut -d " " -f1)
+anio=$(cat notAfter | cut -d " " -f4)
+
+# conversion mes a numero
+case $mes in
+        Jan) mesnum=01 ;;
+        Feb) mesnum=02 ;;
+        Mar) mesnum=03 ;;
+        Apr) mesnum=04 ;;
+        May) mesnum=05 ;;
+        Jun) mesnum=06 ;;
+        Jul) mesnum=07 ;;
+        Aug) mesnum=08 ;;
+        Sep) mesnum=09 ;;
+        Oct) mesnum=10 ;;
+        Nov) mesnum=11 ;;
+        Dec) mesnum=12 ;;
+esac
+
+fechaactual=$(date +%Y-%m-%d)
+vence="$anio-$mesnum-$dia"
+
+# diferencia entre fecha actual y vencimiento certificado
+fecha=$(echo $(( ($(date -d $vence +%s) - $(date -d $fechaactual +%s)) / 86400 )))
+
+# si el certificado se vence en 10 días o menos, se envia notificación
+if [ $fecha -le 100 ]; then
+	echo el certificado del dominio se vence en $fecha dias
+	echo "Alerta!!! el certificado ssl del dominio $dominio vence en $fecha dias" | mail -s "Alerta!!! ssl dominio $dominio" root@example.com
+	else
+	echo ok
+fi
+
