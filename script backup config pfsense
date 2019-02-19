@@ -1,0 +1,45 @@
+1. Ingresar por protocolo ssh al firewall.
+
+
+2. crear el archivo /root/script_backups.sh
+
+
+3. crear el directorio /backups-fwpf en el firewall
+
+
+4. crear la carpeta /backups-fwpf en el servidor remoto (destino del backup).
+
+
+5. Pegar el siguiente script en el archivo /root/script_backups.sh
+
+#!/bin/sh
+### script /root/script_backups.sh
+#### backup del archivo /cf/conf/config.xml
+fecha=$(date +%m-%d-%Y)
+nombrefw=$(hostname)
+/bin/cp /cf/conf/config.xml /backups-fwpf/config-$nombrefw-$fecha.xml
+/usr/bin/scp /backups-fwpf/config-$nombrefw-$fecha.xml usuario@server-backup:/backups-fwpf
+
+Nota: indicar usuario y dirección ip en la última linea.
+
+
+6. Generar el par de llaves del pfsense:
+
+ssh-keygen
+
+
+7. copiar la llave publica al servidor remoto (destino del backup) con el comando:
+
+ssh-copy-id -i .ssh/id_rsa.pub usuario@server-backup
+
+
+8. Crear tarea programada (crontab) con el siguiente contenido (ejecución 2am todos los dias):
+
+0 2 * * * sh /root/script_backups.sh
+
+
+9. Probar script con el comando:
+
+sh /root/script_backups.sh
+
+Nota: Validar el contenido del directorio /backups-fwpf en el firewall y en el servidor remoto.
