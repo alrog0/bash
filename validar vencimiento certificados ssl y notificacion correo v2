@@ -1,0 +1,79 @@
+#!/bin/bash
+mkdir tmp # directorio para validar dominios
+mkdir dominios # directorio que contiene el archivo con la lista de dominios
+touch dominios/dom # archivo que contiene los dominios p.e "www.empresa.com 443" sin comillas el numero es el puerto, un dominio por linea
+rm -rf tmp/*
+dominios=() # arreglo vacio
+puertossl=() # arreglo para el puerto ssl del dominio
+dia=() # para guardar dia de vencimiento de cada dominio
+mes=() # arreglo mes en letras
+#mesnum=() # arreglo para mes en numero
+anio=() # para guardar año de vencimiento de cada dominio
+longf=$(wc -l dominios/dom | cut -d " " -f1) # calculo cantidad de dominios
+fechaactual=$(date +%Y-%m-%d)
+
+# se ingresar los dominios c/u a posición del arreglo
+for (( i=1; i<=longf; i++ ))
+do
+   dominios[$i]=$(sed -n -e $i\p dominios/dom | cut -d " " -f1)
+   puertossl[$i]=$(sed -n -e $i\p dominios/dom | cut -d " " -f2)
+done
+
+# crear archivo para cada dominio
+for (( i=1; i<=${#dominios[@]}; i++ ))
+do
+   echo | openssl s_client -servername ${dominios[$i]} -connect ${dominios[$i]}:${puertossl[$i]} 2>/dev/null | openssl x509 -noout -dates | grep -i nota > tmp/${dominios[$i]}
+   dia[$i]=$(cat tmp/${dominios[$i]} | cut -d " " -f2)
+   mes[$i]=$(cat tmp/${dominios[$i]} | cut -d "=" -f2 | cut -d " " -f1)
+   anio[$i]=$(cat tmp/${dominios[$i]} | cut -d " " -f4)
+
+if [[  " ${mes[$i]} " ==  *" Jan "* ]]; then
+  unset mes[$i]
+  mes[$i]=01
+elif [[ " ${mes[$i]} " ==  *" Feb "* ]]; then
+  unset mes[$i]
+  mes[$i]=02
+elif [[ " ${mes[$i]} " ==  *" Mar "* ]]; then
+  unset mes[$i]
+  mes[$i]=03
+elif [[ " ${mes[$i]} " ==  *" Apr "* ]]; then
+  unset mes[$i]
+  mes[$i]=04
+elif [[ " ${mes[$i]} " ==  *" May "* ]]; then
+  unset mes[$i]
+  mes[$i]=05
+elif [[ " ${mes[$i]} " ==  *" Jun "* ]]; then
+  unset mes[$i]
+  mes[$i]=06
+elif [[ " ${mes[$i]} " ==  *" Jul "* ]]; then
+  unset mes[$i]
+  mes[$i]=07
+elif [[ " ${mes[$i]} " ==  *" Aug "* ]]; then
+  unset mes[$i]
+  mes[$i]=08
+elif [[ " ${mes[$i]} " ==  *" Sep "* ]]; then
+  unset mes[$i]
+  mes[$i]=09
+elif [[ " ${mes[$i]} " ==  *" Oct "* ]]; then
+  unset mes[$i]
+  mes[$i]=10
+elif [[ " ${mes[$i]} " ==  *" Nov "* ]]; then
+  unset mes[$i]
+  mes[$i]=11
+elif [[ " ${mes[$i]} " ==  *" Dec "* ]]; then
+  unset mes[$i]
+  mes[$i]=12
+fi
+
+fechavence="${anio[$i]}-${mes[$i]}-${dia[$i]}"
+diasexpira=$(echo $(( ($(date -d $fechavence +%s) - $(date -d $fechaactual +%s)) / 86400 )))
+
+if [ $diasexpira -le 100 ]; then
+    echo Alerta: el certificado del dominio ${dominios[$i]} expira en $diasexpira días
+#    echo vencimiento ${dia[$i]} mes: ${mes[$i]} año ${anio[$i]} dominio ${dominios[$i]}
+    echo ""
+    else
+    echo OK: dominio ${dominios[$i]}
+    echo ""
+fi
+done
