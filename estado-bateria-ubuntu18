@@ -1,0 +1,15 @@
+#!/bin/bash
+
+porcentaje_carga_bat=$(cat /sys/class/power_supply/BAT1/capacity)
+fuenteacdc=$(cat /sys/class/power_supply/BAT1/status)
+
+if  [ $porcentaje_carga_bat -gt 90 ] && [ $fuenteacdc = "Full" ] ; then
+    /usr/bin/notify-send --expire-time=10000 -i "battery-full-charged" 'Bateria Cargada!!!'
+elif
+    [ $porcentaje_carga_bat -lt 18 ] && [ $fuenteacdc = "Discharging" ] ; then
+    /usr/bin/notify-send --expire-time=10000 -i "battery-caution" 'Bateria Descargada!!!' "$porcentaje_carga_bat%"
+else
+exit 0
+fi
+
+## tener en cuenta el numero de bateria (ej. BAT0, BAT1, etc)
