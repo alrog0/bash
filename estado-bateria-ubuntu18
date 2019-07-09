@@ -1,13 +1,22 @@
 #!/bin/bash
+# el sistema cuenta con dos baterias BAT0 y BAT1, la alerta se configura con respecto a BAT0
+usuario=$(whoami)
+pid=$(pgrep -u $usuario gnome-session | head -n 1)
+# el comando tr corrige la alerta de sustición en consola
+dbus=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$pid/environ | tr '\0' '\n' | sed -e s/DBUS_SESSION_BUS_ADDRESS=//)
+export DBUS_SESSION_BUS_ADDRESS=$dbus
+export HOME=/home/$usuario
+export DISPLAY=:0
 
-porcentaje_carga_bat=$(cat /sys/class/power_supply/BAT1/capacity)
-fuenteacdc=$(cat /sys/class/power_supply/BAT1/status)
-
-if  [ $porcentaje_carga_bat -gt 90 ] && [ $fuenteacdc = "Full" ] ; then
-    /usr/bin/notify-send --expire-time=10000 -i "battery-full-charged" 'Bateria Cargada!!!'
+porcentaje_carga_bat0=$(cat /sys/class/power_supply/BAT0/capacity)
+porcentaje_carga_bat1=$(cat /sys/class/power_supply/BAT1/capacity)
+fuenteacdc0=$(cat /sys/class/power_supply/BAT0/status)
+fuenteacdc1=$(cat /sys/class/power_supply/BAT1/status)
+if  [ $porcentaje_carga_bat0 -gt 95 ] ; then
+    /usr/bin/notify-send --expire-time=10000 -i "battery-full-charged" 'Bateria0 ' "$porcentaje_carga_bat0%"
 elif
-    [ $porcentaje_carga_bat -lt 18 ] && [ $fuenteacdc = "Discharging" ] ; then
-    /usr/bin/notify-send --expire-time=10000 -i "battery-caution" 'Bateria Descargada!!!' "$porcentaje_carga_bat%"
+    [ $porcentaje_carga_bat0 -lt 18 ] && [ $fuenteacdc0 = "Discharging" ] ; then
+    /usr/bin/notify-send --expire-time=10000 -i "battery-caution" 'Bateria0' "$porcentaje_carga_bat0%"
 else
 exit 0
 fi
