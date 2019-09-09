@@ -1,5 +1,21 @@
-
-@reboot /usr/sbin/tunctl -t tap0 && /sbin/ifconfig tap0 10.200.200.1 netmask 255.255.255.252 up
+# FORMA 1
+tunctl -t tap0 && ifconfig tap0 10.200.200.1 netmask 255.255.255.0 up
 apt install uml-utilities bridge-utils
 iptables -t nat -A POSTROUTING -o wlp6s0 -j MASQUERADE
 iptables -A FORWARD -i tap0 -j ACCEPT
+iptables -A FORWARD -i tap1 -j ACCEPT
+
+
+
+# FORMA 2
+tunctl -t tap0
+ip addr add 10.200.100.1/24 broadcast 10.200.100.255 dev tap0
+ip link set tap0 up
+
+tunctl -t tap1
+ip addr add 10.200.200.1/24 broadcast 10.200.200.255 dev tap1
+ip link set tap1 up
+
+iptables -t nat -A POSTROUTING -o wlp6s0 -j MASQUERADE
+iptables -A FORWARD -i tap0 -j ACCEPT
+iptables -A FORWARD -i tap1 -j ACCEPT
