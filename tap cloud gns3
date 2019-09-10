@@ -15,6 +15,8 @@ ip link set tap0 up
 tunctl -t tap1
 ip addr add 10.200.200.1/24 broadcast 10.200.200.255 dev tap1
 ip link set tap1 up
+nmcli con up tap0
+nmcli con up tap1
 
 iptables -t nat -A POSTROUTING -o wlp6s0 -j MASQUERADE
 iptables -A FORWARD -i tap0 -j ACCEPT
