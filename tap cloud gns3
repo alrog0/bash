@@ -21,3 +21,9 @@ nmcli con up tap1
 iptables -t nat -A POSTROUTING -o wlp6s0 -j MASQUERADE
 iptables -A FORWARD -i tap0 -j ACCEPT
 iptables -A FORWARD -i tap1 -j ACCEPT
+
+# borrar adaptadores
+ip link set tap0 down
+ip link set tap1 down
+ip link delete tap0
+ip link delete tap1
