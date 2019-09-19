@@ -1,0 +1,81 @@
+Link:
+
+https://serverfault.com/questions/434064/correct-way-to-move-kvm-vm
+
+
+crear directorios en ruta de backup:
+
+../migracion
+
+../migracion/net-dumpxml
+
+
+Listar redes
+
+virsh net-list
+
+Backup redes listadas
+
+virsh net-dumpxml red-listada-1 > red-listada-1.xml
+virsh net-dumpxml red-listada-2 > red-listada-2.xml
+virsh net-dumpxml red-listada-3 > red-listada-3.xml
+
+Listar maquinas virtuales
+
+virsh list --all
+
+Crear directorios con el nombre de la mv en la ruta ../migracion/dumpxml. Dentro de cada carpeta de la vm crear dos mas con nombre discos y  snapshot-dumpxml
+
+ejemplo:
+
+vm-listada1
+
+vm-listada2
+
+
+Directorios
+
+../migracion/dumpxml/vm-listada1/dumpxml
+
+../migracion/dumpxml/vm-listada1/discos
+
+../migracion/dumpxml/vm-listada1/snapshot-dumpxml
+
+
+../migracion/dumpxml/vm-listada2/dumpxml
+
+../migracion/dumpxml/vm-listada2/discos
+
+../migracion/dumpxml/vm-listada2/snapshot-dumpxml
+
+
+Backup configuración maquinas virtuales
+
+virsh dumpxml vm-listada1 > ../migracion/vm-listada1/dumpxml/vm-listada1.xml
+
+virsh dumpxml vm-listada2 > ../migracion/vm-listada2/dumpxml/vm-listada2.xml
+
+Backup discos maquinas virtuales
+
+cp -ravf vm-listada1.qcow ../migracion/dumpxml/vm-listada2/discos/listada1.qcow
+
+cp -ravf vm-listada2.qcow ../migracion/dumpxml/vm-listada2/discos/listada2.qcow
+
+Listar snapshot maquinas virtuales
+
+virsh snapshot-list vm-listada1
+
+virsh snapshot-list vm-listada2
+
+virsh snapshot-list vm-listada3
+
+Backup configuración snapshot por maquina virtual
+
+virsh snapshot-dumpxml vm-listada1 snapshot1 > ../migracion/dumpxml/vm-listada1/snapshot-dumpxml/snapshot1.xml
+
+virsh snapshot-dumpxml vm-listada1 snapshot2 > ../migracion/dumpxml/vm-listada1/snapshot-dumpxml/snapshot2.xml
+
+
+virsh snapshot-dumpxml vm-listada2 snapshot1 > ../migracion/dumpxml/vm-listada2/snapshot-dumpxml/snapshot1.xml
+
+virsh snapshot-dumpxml vm-listada2 snapshot2 > ../migracion/dumpxml/vm-listada2/snapshot-dumpxml/snapshot2.xml
