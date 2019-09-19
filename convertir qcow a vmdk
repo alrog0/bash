@@ -1,0 +1,5 @@
+#convertir imagen de disco de qcow a vmdk y mostrar progreso
+qemu-img convert -p -f qcow2 -O vmdk /home/vmachines/SAMBA-AD/samba4-demo2.qcow2 /home/vmachines/SAMBA-AD/samba4kvm.vmdk
+
+# copiar imagen vmdk a servidor vmware en lun especifica y carpeta especifica
+scp /home/vmachines/SAMBA-AD/samba4kvm.vmdk root@172.18.48.10:/vmfs/volumes/LUN_TESTING/samba4-sk/
