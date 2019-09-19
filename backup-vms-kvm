@@ -79,3 +79,16 @@ virsh snapshot-dumpxml vm-listada1 snapshot2 > ../migracion/dumpxml/vm-listada1/
 virsh snapshot-dumpxml vm-listada2 snapshot1 > ../migracion/dumpxml/vm-listada2/snapshot-dumpxml/snapshot1.xml
 
 virsh snapshot-dumpxml vm-listada2 snapshot2 > ../migracion/dumpxml/vm-listada2/snapshot-dumpxml/snapshot2.xml
+
+
+SERVIDOR DESTINO
+
+Definir maquina a partir de archivo de configuración
+
+virsh define ../migracion/vm-listada1/dumpxml/vm-listada1.xml
+
+Importar snapshots
+
+virsh snapshot-create --redefine vm-listada1 ../migracion/dumpxml/vm-listada1/snapshot-dumpxml/snapshot1.xml
+
+virsh snapshot-create --redefine vm-listada1 ../migracion/dumpxml/vm-listada1/snapshot-dumpxml/snapshot2.xml
